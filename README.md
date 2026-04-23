@@ -29,7 +29,7 @@ Included in this repository are a number of useful things:
     | Firefox        | Web browser           | latest stable       |
     | VS Code CLI    | IDE                   | latest stable       |
 
-  Also included in the docker directory is the `DockerFile` if you wish to build you own local container as well as three scripts that can be used for setting up your environment
+  Also included in the docker directory is the `DockerFile` if you wish to build you own local container as well as three scripts that can be used for setting up your environment.
   ```bash
   run-chiselware-linux.sh # For Linux environments
   run-chiselware-mac.sh   # For MacOS
@@ -40,6 +40,7 @@ Not included here are several other important resources for the chiselWare devel
   - The [Microsoft Azure Marketplace](https://marketplace.microsoft.com/en-us/product/rocksavagetechnologyinc1713893864282.chiselware-ubuntu_24_04?tab=Overview) contains a VM image that contains all the pinned versions of the required tools (native, not Docker) for developers that would like to have their own VM of any size to develop the code on.
 
   - An [example repository of a complete chiselWare-compliant core](https://github.com/chiselWare/00-000-dff) using a D-flip-flop as the most simplest example possible. This template should be the starting point for all new designs. See the README.md in that core for instructions on how to customize this repo for your own core. 
+
   <mark> **WARNING:** Failure to build your repo with this template will almost certainly result in your core failing automated regressions. </mark> 
 
   # Using the Docker Container
@@ -51,7 +52,7 @@ Not included here are several other important resources for the chiselWare devel
 | GitHub Container Registry | `ghcr.io/chiselware/dev-full:0.7.1` | All users (public) | None          |
 
 
-### Linux
+## Running on Linux
 
 ```bash
 # Pull the desired version 
@@ -65,7 +66,7 @@ cd ~/my-chisel-project
 ./run-chiselware-linux.sh
 ```
 
-### macOS (Apple Silicon — M1/M2/M3)
+## Running on macOS (Apple Silicon — M1/M2/M3)
 
 ```bash
 # Install Docker Desktop from https://www.docker.com/products/docker-desktop/
@@ -87,7 +88,7 @@ Install XQuartz from https://www.xquartz.org, log out and back in, then
 enable "Allow connections from network clients" in XQuartz Preferences →
 Security. X forwarding activates automatically on next container launch.
 
-### Windows (WSL2)
+## Running on Windows (WSL2)
 
 Requirements:
 - Windows 11 or Windows 10 (build 19041+)
@@ -129,7 +130,7 @@ chmod 600 ~/.ssh/id_rsa
 
 ---
 
-### GitHub Access
+## GitHub Access
 
 The run scripts mount your host SSH keys into the container. Use SSH URLs
 for all git operations inside the container:
@@ -159,7 +160,7 @@ chmod 644 ~/.ssh/*.pub ~/.ssh/known_hosts
 
 ---
 
-### Persisting Work
+## Persisting Work
 
 Containers are ephemeral — always work within `/workspace` which maps to
 the directory you launched the script from on your host:
@@ -175,13 +176,30 @@ are accessible on your host after the container exits.
 
 ---
 
-### VS Code via Browser (code tunnel)
+## Running VS Code with the container 
 
-No X forwarding needed — works from any browser on any OS:
+There are two main ways to use VS Code with the container:
+- From a browser
+- From the desktop App
+   
+### VS Code through a browser 
+
+This opens VS Code from within a browser window.
 
 ```bash
 ./run-chiselware-<platform>.sh
 # Inside the container:
 code tunnel
-# Follow the GitHub auth prompt — opens VS Code in your browser
 ```
+Follow the GitHub auth prompt, provide a name for tunnel (default is container name) and then use the provided link to bring up a VS Code in a browser window.
+
+## Local VS Code through code tunnel
+
+This allows VS Code to open your repo from the desktop VS Code app.
+
+```bash
+./run-chiselware-<platform>.sh
+# Inside the container:
+code tunnel
+```
+Follow the GitHub auth prompt, provide a name for tunnel (default is container name) , then open the desktop VS code application.  Within VS Code window, click on the `><` symbol at the bottom left of the screen and select "Connect to tunnel" and select the name of the tunnel.
