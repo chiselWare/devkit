@@ -17,7 +17,7 @@
 #   ./run-chiselware-linux.sh sbt "testOnly mypackage.MySpec"
 # =============================================================================
 
-IMAGE="chiselware/dev-full:0.7.1"
+IMAGE="ghcr.io/chiselware/dev-full:0.7.1"
 
 # ---------------------------------------------------------------------------
 # X forwarding — attach if a display is available, skip silently if not

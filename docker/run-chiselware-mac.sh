@@ -23,11 +23,15 @@
 #   ./run-chiselware-mac.sh sbt "testOnly org.chiselware.MySpec"
 # =============================================================================
 
-IMAGE="chiselwareregistry.azurecr.io/dev-full:0.7.1"
+IMAGE="ghcr.io/chiselware/dev-full:0.7.1"
 
 # ---------------------------------------------------------------------------
 # X forwarding — requires XQuartz on macOS
 # Install from https://www.xquartz.org if you need GTKWave or Firefox
+#
+# Note: XQuartz needs to be manually restarted sometimes after software 
+# updates. If you find errors, give that a try first. Also make sure to check
+# the "Allow Network Connections" in Settings->Security.
 # ---------------------------------------------------------------------------
 DISPLAY_ARGS=()
 if [ -n "$DISPLAY" ]; then
