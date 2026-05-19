@@ -40,7 +40,7 @@ Not included here are several other important resources for the chiselWare devel
   - The [Microsoft Azure Marketplace](https://marketplace.microsoft.com/en-us/product/rocksavagetechnologyinc1713893864282.chiselware-ubuntu_24_04?tab=Overview) contains a VM image that contains all the pinned versions of the required tools (native, not Docker) for developers that would like to have their own VM of any size to develop the code on.
 
   - An [example repository of a complete chiselWare-compliant core](https://github.com/chiselWare/00-000-dff) using a D-flip-flop as the most simplest example possible. This template should be the starting point for all new designs. See the README.md in that core for instructions on how to customize this repo for your own core. 
-
+  
   <mark> **WARNING:** Failure to build your repo with this template will almost certainly result in your core failing automated regressions. </mark> 
 
   # Using the Docker Container
