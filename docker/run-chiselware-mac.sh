@@ -4,7 +4,7 @@
 #
 # Launch the ChiselWare full development container on macOS (Apple Silicon).
 #
-# Differences from run-chiselware-linux.sh (Linux):
+# Differences from run-chiselware.sh (Linux):
 #   - --platform linux/amd64 flag for Apple Silicon (M1/M2/M3)
 #   - X forwarding uses XQuartz instead of built-in X11
 #   - XQuartz must be installed separately: https://www.xquartz.org
@@ -15,7 +15,9 @@
 #   - X forwarding for GTKWave and Firefox (requires XQuartz)
 #
 # Usage:
-#   ./run-chiselware-mac.sh                  # interactive shell
+#   ./run-chiselware-mac.sh                  # interactive shell (default version)
+#   ./run-chiselware-mac.sh -v 0.7.1         # specific version
+#   ./run-chiselware-mac.sh -v 0.7.1 sbt test  # specific version + command
 #   ./run-chiselware-mac.sh sbt test         # run a single command and exit
 #
 # Examples:
@@ -23,15 +25,52 @@
 #   ./run-chiselware-mac.sh sbt "testOnly org.chiselware.MySpec"
 # =============================================================================
 
-IMAGE="ghcr.io/chiselware/dev-full:0.7.1"
+REGISTRY="chiselwareregistry.azurecr.io/dev-full"
+# ---------------------------------------------------------------------------
+# -v <version> flag — required, must be valid semver x.y.z
+# Usage: ./run-chiselware.sh -v <x.y.z> [command...]
+# Example: ./run-chiselware.sh -v 0.7.1
+#          ./run-chiselware.sh -v 0.7.1 sbt test
+# ---------------------------------------------------------------------------
+VERSION=""
+while getopts ":v:" opt; do
+  case $opt in
+    v)
+      VERSION="$OPTARG"
+      ;;
+    \?)
+      echo "Error: unknown option -$OPTARG"
+      echo "Usage: $0 -v <x.y.z> [command...]"
+      exit 1
+      ;;
+    :)
+      echo "Error: -v requires a version argument"
+      echo "Usage: $0 -v <x.y.z> [command...]"
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND - 1))  # remove parsed flags, leaving any command args
+
+if [ -z "$VERSION" ]; then
+  echo "Error: -v <version> is required."
+  echo "Usage: $0 -v <x.y.z> [command...]"
+  echo "Example: $0 -v 0.7.1"
+  exit 1
+fi
+
+SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+$"
+if [[ ! $VERSION =~ $SEMVER_REGEX ]]; then
+  echo "Error: '$VERSION' is not valid semver format (expected x.y.z e.g. 0.7.1)"
+  exit 1
+fi
+
+IMAGE="$REGISTRY:$VERSION"
+echo "Using ChiselWare dev-full:$VERSION"
 
 # ---------------------------------------------------------------------------
 # X forwarding — requires XQuartz on macOS
 # Install from https://www.xquartz.org if you need GTKWave or Firefox
-#
-# Note: XQuartz needs to be manually restarted sometimes after software 
-# updates. If you find errors, give that a try first. Also make sure to check
-# the "Allow Network Connections" in Settings->Security.
 # ---------------------------------------------------------------------------
 DISPLAY_ARGS=()
 if [ -n "$DISPLAY" ]; then
@@ -81,9 +120,13 @@ fi
 # ---------------------------------------------------------------------------
 if [ -n "$SSH_MOUNT_CMD" ]; then
   if [ $# -eq 0 ]; then
+    # Interactive shell — run SSH setup then drop into bash
     CONTAINER_CMD=("bash" "-c" "${SSH_MOUNT_CMD} && exec bash")
   else
-    CONTAINER_CMD=("bash" "-c" "${SSH_MOUNT_CMD} && exec \"$@\"")
+    # Pass-through command — run SSH setup then exec the command array
+    # Using printf '%q' safely quotes each argument to avoid word splitting
+    QUOTED_CMD=$(printf '%q ' "$@")
+    CONTAINER_CMD=("bash" "-c" "${SSH_MOUNT_CMD} && exec ${QUOTED_CMD}")
   fi
 else
   if [ $# -eq 0 ]; then

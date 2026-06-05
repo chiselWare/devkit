@@ -13,22 +13,25 @@
 #   - Yosys 0.33-5build2
 #   - CUDD 3.0.0 (built from source)
 #   - OpenSTA 2.7.0 @ aa3088885f1efa3150cdd8c962bebf0599b5ecf1
+#   - sby (SymbiYosys) v0.65 @ pinned commit (formal verification front-end)
+#   - Yices2 2.6.4 (SMT solver for formal verification)
+#   - Z3 (apt — default solver for chiseltest.formal)
 #   - TeXLive (latex-base, fonts-recommended, fonts-extra, latex-extra)
 #   - VS Code CLI (code tunnel)
 #   - X11 apps (GTKWave X forwarding support)
 #
 # Build:
-#   docker build -t chiselware/dev-full:1.0.0 .
+#   docker build -t chiselware/dev-full:0.8.0 .
 #
 # Run (interactive shell):
-#   docker run -it --rm -v $(pwd):/workspace chiselware/dev-full:1.0.0
+#   docker run -it --rm -v $(pwd):/workspace chiselware/dev-full:0.8.0
 #
 # Run with X forwarding (GTKWave etc.):
 #   docker run -it --rm \
 #     -v $(pwd):/workspace \
 #     -e DISPLAY=$DISPLAY \
 #     -v /tmp/.X11-unix:/tmp/.X11-unix \
-#     chiselware/dev-full:1.0.0
+#     chiselware/dev-full:0.8.0
 # =============================================================================
 
 FROM ubuntu:24.04
@@ -58,6 +61,8 @@ RUN apt-get update && apt-get install -y \
     swig \
     zlib1g-dev \
     libeigen3-dev \
+    python3 \
+    python3-pip \
     # --- X11 (GTKWave X forwarding) ---
     x11-apps \
     # --- Tcl ---
@@ -74,6 +79,8 @@ RUN apt-get update && apt-get install -y \
     gtkwave=3.3.116-1build2 \
     yosys=0.33-5build2 \
     yosys-abc=0.33-5build2 \
+    # --- Formal verification solvers ---
+    z3 \
     # --- Misc ---
     ca-certificates \
     gnupg \
@@ -130,7 +137,38 @@ RUN git clone https://github.com/parallaxsw/OpenSTA.git /opt/OpenSTA-parallax \
     && rm -rf /opt/OpenSTA-parallax/build
 
 # =============================================================================
-# LAYER 4 — LaTeX
+# LAYER 4 — Yices2 2.6.4 (SMT solver — optional but useful alongside Z3)
+# Installed from official SRI binary tarball — not in Ubuntu 24.04 apt.
+# Pinned to 2.6.4 via versioned URL.
+# =============================================================================
+RUN cd /tmp \
+    && wget https://yices.csl.sri.com/releases/2.6.4/yices-2.6.4-x86_64-pc-linux-gnu.tar.gz \
+    && tar xzf yices-2.6.4-x86_64-pc-linux-gnu.tar.gz \
+    && cd yices-2.6.4 \
+    && ./install-yices /usr/local \
+    && cd /tmp \
+    && rm -rf yices-2.6.4 yices-2.6.4-x86_64-pc-linux-gnu.tar.gz
+
+# =============================================================================
+# LAYER 5 — sby (SymbiYosys) v0.65 (formal verification front-end)
+# Not available in Ubuntu 24.04 apt or PyPI — installed from source.
+# Pinned to commit that produced v0.65, verified against local install.
+# To update: run `git log --oneline -1` in your local sby clone after
+# `sby --version` confirms the desired version, then update the SHA here.
+#
+# SHA for v0.65: obtain from your verified local install:
+#   cd ~/Downloads/sby && git log --oneline -1
+# =============================================================================
+RUN git clone https://github.com/YosysHQ/sby.git /opt/src/sby \
+    && cd /opt/src/sby \
+    # Pin to commit SHA matching locally verified v0.65
+    # UPDATE THIS SHA: run `git log --oneline -1` in your local sby clone
+    && git checkout f57802a \
+    && make install \
+    && rm -rf /opt/src/sby
+
+# =============================================================================
+# LAYER 6 — LaTeX
 # texlive-fonts-extra is large (~1.5GB) and slow — isolated in its own layer
 # so it only rebuilds if LaTeX packages change.
 # =============================================================================
@@ -143,7 +181,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # =============================================================================
-# LAYER 5 — sbt 1.11.7
+# LAYER 7 — sbt 1.11.7
 # Uses official sbt apt repository, pinned to 1.11.7.
 # =============================================================================
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" \
@@ -158,7 +196,7 @@ RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" \
     && rm -rf /var/lib/apt/lists/*
 
 # =============================================================================
-# LAYER 6 — firtool 1.47.0
+# LAYER 8 — firtool 1.47.0
 # Pinned via versioned GitHub release URL.
 # =============================================================================
 RUN curl -fLo /tmp/firrtl-bin-linux-x64.tar.gz \
@@ -169,7 +207,7 @@ RUN curl -fLo /tmp/firrtl-bin-linux-x64.tar.gz \
     && rm -rf /tmp/firtool-1.47.0 /tmp/firrtl-bin-linux-x64.tar.gz
 
 # =============================================================================
-# LAYER 7 — Scala CLI 1.10.1
+# LAYER 9 — Scala CLI 1.10.1
 # Pinned to 1.10.1 via versioned release URL (NOT /latest/).
 # VM had 1.10.1 installed; deliberately not upgrading to 1.12.4.
 # =============================================================================
@@ -180,7 +218,7 @@ RUN curl -fLo /tmp/scala-cli.deb \
     && rm -f /tmp/scala-cli.deb
 
 # =============================================================================
-# LAYER 8 — VS Code CLI (code tunnel)
+# LAYER 10 — VS Code CLI (code tunnel)
 # No version pin available from Microsoft's stable endpoint.
 # Isolated in its own layer for easy rebuild if needed.
 # =============================================================================
@@ -193,7 +231,7 @@ RUN mkdir -p /opt/vscode-cli \
     && ln -sf /opt/vscode-cli/code /usr/local/bin/code
 
 # =============================================================================
-# LAYER 9 — Firefox (Mozilla APT repo — avoids Ubuntu snap redirect)
+# LAYER 11 — Firefox (Mozilla APT repo — avoids Ubuntu snap redirect)
 # Isolated in its own layer so it never triggers rebuilds of EDA/LaTeX layers.
 # Requires X forwarding at runtime (same as GTKWave).
 # =============================================================================
@@ -208,7 +246,7 @@ RUN apt-get update && apt-get install -y wget gpg && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # =============================================================================
-# LAYER 10 — Environment, workspace, entrypoint
+# LAYER 12 — Environment, workspace, entrypoint
 # This layer is the cheapest to rebuild — put all ENV/config here.
 # Always keep this as the final layer.
 # =============================================================================
@@ -228,6 +266,9 @@ RUN echo "=== ChiselWare Dev Environment ===" \
     && firtool --version \
     && yosys -V \
     && sta --version \
+    && sby --version \
+    && yices-smt2 --version \
+    && z3 --version \
     && { which gtkwave > /dev/null 2>&1 && echo "gtkwave: OK (display required at runtime)"; } || echo "WARNING: gtkwave not found" \
     && { which firefox > /dev/null 2>&1 && firefox --version; } || echo "WARNING: firefox not found" \
     && iverilog -V 2>&1 | head -1 \

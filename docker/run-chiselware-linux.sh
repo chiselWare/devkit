@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# run-chiselware-linux.sh
+# run-chiselware.sh
 #
 # Launch the ChiselWare full development container with:
 #   - Current directory mounted as /workspace
@@ -9,15 +9,58 @@
 #   - X forwarding for GTKWave (if a display is available)
 #
 # Usage:
-#   ./run-chiselware-linux.sh                  # interactive shell
-#   ./run-chiselware-linux.sh sbt test         # run a single command and exit
+#   ./run-chiselware.sh                  # interactive shell (default version)
+#   ./run-chiselware.sh -v 0.7.1         # specific version
+#   ./run-chiselware.sh -v 0.7.1 sbt test  # specific version + command
+#   ./run-chiselware.sh sbt test         # run a single command and exit
 #
 # Examples:
-#   cd ~/my-chisel-project && ~/run-chiselware-linux.sh
-#   ./run-chiselware-linux.sh sbt "testOnly mypackage.MySpec"
+#   cd ~/my-chisel-project && ~/run-chiselware.sh
+#   ./run-chiselware.sh sbt "testOnly mypackage.MySpec"
 # =============================================================================
 
-IMAGE="ghcr.io/chiselware/dev-full:0.7.1"
+REGISTRY="ghcr.io/chiselware/dev-full"
+# ---------------------------------------------------------------------------
+# -v <version> flag — required, must be valid semver x.y.z
+# Usage: ./run-chiselware.sh -v <x.y.z> [command...]
+# Example: ./run-chiselware.sh -v 0.7.1
+#          ./run-chiselware.sh -v 0.7.1 sbt test
+# ---------------------------------------------------------------------------
+VERSION=""
+while getopts ":v:" opt; do
+  case $opt in
+    v)
+      VERSION="$OPTARG"
+      ;;
+    \?)
+      echo "Error: unknown option -$OPTARG"
+      echo "Usage: $0 -v <x.y.z> [command...]"
+      exit 1
+      ;;
+    :)
+      echo "Error: -v requires a version argument"
+      echo "Usage: $0 -v <x.y.z> [command...]"
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND - 1))  # remove parsed flags, leaving any command args
+
+if [ -z "$VERSION" ]; then
+  echo "Error: -v <version> is required."
+  echo "Usage: $0 -v <x.y.z> [command...]"
+  echo "Example: $0 -v 0.7.1"
+  exit 1
+fi
+
+SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+$"
+if [[ ! $VERSION =~ $SEMVER_REGEX ]]; then
+  echo "Error: '$VERSION' is not valid semver format (expected x.y.z e.g. 0.7.1)"
+  exit 1
+fi
+
+IMAGE="$REGISTRY:$VERSION"
+echo "Using ChiselWare dev-full:$VERSION"
 
 # ---------------------------------------------------------------------------
 # X forwarding — attach if a display is available, skip silently if not
@@ -68,11 +111,13 @@ fi
 # Build the startup command: fix SSH ownership then run user's command
 if [ -n "$SSH_MOUNT_CMD" ]; then
   if [ $# -eq 0 ]; then
-    # Interactive shell
+    # Interactive shell — run SSH setup then drop into bash
     CONTAINER_CMD=("bash" "-c" "${SSH_MOUNT_CMD} && exec bash")
   else
-    # Pass-through command
-    CONTAINER_CMD=("bash" "-c" "${SSH_MOUNT_CMD} && exec \"$@\"")
+    # Pass-through command — run SSH setup then exec the command array
+    # Using printf '%q' safely quotes each argument to avoid word splitting
+    QUOTED_CMD=$(printf '%q ' "$@")
+    CONTAINER_CMD=("bash" "-c" "${SSH_MOUNT_CMD} && exec ${QUOTED_CMD}")
   fi
 else
   if [ $# -eq 0 ]; then
