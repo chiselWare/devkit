@@ -12,22 +12,25 @@ Included in this repository are a number of useful things:
 - `chiselWare Developers Guide` is a companion to the chiselWare Standard and contains information about the reasons behind the methodology and hints and advice that are useful for developers. (Note: This currently includes the beginnings of the chiselWare standard)
 - `Containerized chiselWare Design Environment` is the complete environment for developing a chiselWare core that includes the pinned version of all required tools. Included in the container are the following tools:
 
-    | Tool           | Description           | Version             |
-    | -------------- | --------------------- | ------------------- |
-    | Ubuntu         | Linux server          | 24.04 LTS Server    |
-    | OpenJDL        | Java platform         | 21.x                |
-    | sbt            | Scala build tool      | 1.11                |
-    | Scala CLI      | Command line tool     | 1.10.1              |
-    | firtool        | Verilog generator     | 1.47                |
-    | Verilator      | Compiled simulator    | 5.020-1             |
-    | Icarus Verilog | Interpreted simulator | 12.0-2build2        |
-    | GTKWave        | Waveform viewer       | 3.3.116-1build2     |
-    | Yosys          | Synthesis tool        | 0.33-5build2        |
-    | CUDD           | BDD pkg used by Yosys | 3.0.0               |
-    | OpenSTA        | Static timing tool    | 2.7.0               |
-    | TeXLive        | LateX tools           | Uses Ubuntu version |
-    | Firefox        | Web browser           | latest stable       |
-    | VS Code CLI    | IDE                   | latest stable       |
+    | Tool           | Description            | Version             |
+    | -------------- | ---------------------- | ------------------- |
+    | Ubuntu         | Linux server           | 24.04 LTS Server    |
+    | OpenJDL        | Java platform          | 21.x                |
+    | sbt            | Scala build tool       | 1.11                |
+    | Scala CLI      | Command line tool      | 1.10.1              |
+    | firtool        | Verilog generator      | 1.47                |
+    | Verilator      | Compiled simulator     | 5.020-1             |
+    | Icarus Verilog | Interpreted simulator  | 12.0-2build2        |
+    | GTKWave        | Waveform viewer        | 3.3.116-1build2     |
+    | Yosys          | Synthesis tool         | 0.33-5build2        |
+    | CUDD           | BDD pkg used by Yosys  | 3.0.0               |
+    | OpenSTA        | Static timing tool     | 2.7.0               |
+    | sby            | Yosys Formal front-end | v0.65               |
+    | Yices2         | SAT solver             | 2.6.4               |
+    | Z3             | SAT solver             | Uses Ubuntu version |
+    | TeXLive        | LateX tools            | Uses Ubuntu version |
+    | Firefox        | Web browser            | latest stable       |
+    | VS Code CLI    | IDE                    | latest stable       |
 
   Also included in the docker directory is the `DockerFile` if you wish to build you own local container as well as three scripts that can be used for setting up your environment.
   ```bash
@@ -43,20 +46,25 @@ Not included here are several other important resources for the chiselWare devel
   
   <mark> **WARNING:** Failure to build your repo with this template will almost certainly result in your core failing automated regressions. </mark> 
 
+## Citing chiselWare
+
+If you use chiselWare in academic work, please cite it.
+See [CITATION.md](CITATION.md) for BibTeX and plain text formats.
+
   # Using the Docker Container
 
   The easiest way to use the chiselWare environment is pull the pre-built container from the `GitHub Container Registry`. This is highly recommended over building your own container with the provided `Dockerfile` to insure that your development is compatible with the officially supported chiselWare versions. 
 
 | Registry                  | URL                                 | Audience           | Auth required |
 | ------------------------- | ----------------------------------- | ------------------ | ------------- |
-| GitHub Container Registry | `ghcr.io/chiselware/dev-full:0.7.1` | All users (public) | None          |
+| GitHub Container Registry | `ghcr.io/chiselware/dev-full:0.8.0` | All users (public) | None          |
 
 
 ## Running on Linux
 
 ```bash
 # Pull the desired version 
-docker pull ghcr.io/chiselware/dev-full:X.Y.Z
+docker pull ghcr.io/chiselware/dev-full:0.8.0
 
 # Copy the run script into a executable path or add this location to your path
 chmod +x run-chiselware-linux.sh
@@ -73,7 +81,7 @@ cd ~/my-chisel-project
 # Choose the Apple Silicon version
 
 # Pull the desired version 
-docker pull --platform linux/amd64 ghcr.io/chiselware/dev-full:X.Y.Z
+docker pull --platform linux/amd64 ghcr.io/chiselware/dev-full:0.8.0
 
 # Copy the run script into a executable path or add this location to your path
 chmod +x run-chiselware-mac.sh
@@ -100,7 +108,7 @@ Requirements:
 
 ```bash
 # Pull the desired version  (from within the WSL window)
-docker pull ghcr.io/chiselware/dev-full:X.Y.Z
+docker pull ghcr.io/chiselware/dev-full:0.8.0
 
 # Copy the run script into a executable path or add this location to your path
 chmod +x run-chiselware-wsl.sh

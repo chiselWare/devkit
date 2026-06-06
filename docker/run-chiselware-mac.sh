@@ -25,6 +25,7 @@
 #   ./run-chiselware-mac.sh sbt "testOnly org.chiselware.MySpec"
 # =============================================================================
 
+<<<<<<< HEAD
 REGISTRY="chiselwareregistry.azurecr.io/dev-full"
 # ---------------------------------------------------------------------------
 # -v <version> flag — required, must be valid semver x.y.z
@@ -67,6 +68,9 @@ fi
 
 IMAGE="$REGISTRY:$VERSION"
 echo "Using ChiselWare dev-full:$VERSION"
+=======
+IMAGE="ghcr.io/chiselware/dev-full:0.8.0"
+>>>>>>> a973f19 (Formal verfication support)
 
 # ---------------------------------------------------------------------------
 # X forwarding — requires XQuartz on macOS

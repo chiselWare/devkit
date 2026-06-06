@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+title: chiselWare
+abstract: >
+  chiselWare is a certified open-source ecosystem for professional-grade
+  semiconductor IP core development using the Chisel hardware description
+  language. It provides a methodology, toolchain, and certification
+  framework for creating reusable, high-quality Chisel IP cores.
+authors:
+  - family-names: Savage
+    given-names: Warren
+    affiliation: Rocksavage Technology, Inc.
+    email: admin@chiselware.org
+type: software
+license: Apache-2.0
+repository-code: https://github.com/chiselWare/devkit
+url: https://chiselware.org
+version: 0.8.0
+date-released: 2026-05-23
+keywords:
+  - chisel
+  - semiconductor IP
+  - hardware description language
+  - IP reuse
+  - open source EDA
+  - formal verification
+  - ASIC
+  - FPGA
+preferred-citation:
+  type: software
+  title: chiselWare
+  authors:
+    - family-names: Savage
+      given-names: Warren
+      affiliation: Rocksavage Technology, Inc.
+  url: https://chiselware.org
+  year: 2026
+  version: 0.8.0
