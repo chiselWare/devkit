@@ -30,7 +30,6 @@
 #   ./run-chiselware-wsl.sh sbt "testOnly org.chiselware.MySpec"
 # =============================================================================
 
-<<<<<<< HEAD
 REGISTRY="ghcr.io/chiselware/dev-full"
 # ---------------------------------------------------------------------------
 # -v <version> flag — required, must be valid semver x.y.z
@@ -73,9 +72,6 @@ fi
 
 IMAGE="$REGISTRY:$VERSION"
 echo "Using ChiselWare dev-full:$VERSION"
-=======
-IMAGE="ghcr.io/chiselware/dev-full:0.8.0"
->>>>>>> a973f19 (Formal verfication support)
 
 # ---------------------------------------------------------------------------
 # Verify we are running inside WSL2
