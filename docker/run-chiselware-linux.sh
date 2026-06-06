@@ -10,6 +10,7 @@
 #
 # Usage:
 #   ./run-chiselware.sh                  # interactive shell (default version)
+#   CHISELWARE_DEV_VERSION=0.7.1 ./run-chiselware.sh   # use env var version
 #   ./run-chiselware.sh -v 0.7.1         # specific version
 #   ./run-chiselware.sh -v 0.7.1 sbt test  # specific version + command
 #   ./run-chiselware.sh sbt test         # run a single command and exit
@@ -21,8 +22,10 @@
 
 REGISTRY="ghcr.io/chiselware/dev-full"
 # ---------------------------------------------------------------------------
-# -v <version> flag — required, must be valid semver x.y.z
-# Usage: ./run-chiselware.sh -v <x.y.z> [command...]
+# VERSION can come from CHISELWARE_DEV_VERSION or -v <version>
+# If CHISELWARE_DEV_VERSION is set, it takes precedence over -v.
+# Usage: CHISELWARE_DEV_VERSION=<x.y.z> ./run-chiselware.sh [command...]
+#        ./run-chiselware.sh -v <x.y.z> [command...]
 # Example: ./run-chiselware.sh -v 0.7.1
 #          ./run-chiselware.sh -v 0.7.1 sbt test
 # ---------------------------------------------------------------------------
@@ -46,9 +49,14 @@ while getopts ":v:" opt; do
 done
 shift $((OPTIND - 1))  # remove parsed flags, leaving any command args
 
+if [ -n "$CHISELWARE_DEV_VERSION" ]; then
+  VERSION="$CHISELWARE_DEV_VERSION"
+fi
+
 if [ -z "$VERSION" ]; then
-  echo "Error: -v <version> is required."
-  echo "Usage: $0 -v <x.y.z> [command...]"
+  echo "Error: provide a version with CHISELWARE_DEV_VERSION or -v <version>."
+  echo "Usage: CHISELWARE_DEV_VERSION=<x.y.z> $0 [command...]"
+  echo "   or: $0 -v <x.y.z> [command...]"
   echo "Example: $0 -v 0.7.1"
   exit 1
 fi
