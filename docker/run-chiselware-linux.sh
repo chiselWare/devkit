@@ -19,7 +19,6 @@
 #   ./run-chiselware.sh sbt "testOnly mypackage.MySpec"
 # =============================================================================
 
-<<<<<<< HEAD
 REGISTRY="ghcr.io/chiselware/dev-full"
 # ---------------------------------------------------------------------------
 # -v <version> flag — required, must be valid semver x.y.z
@@ -62,9 +61,6 @@ fi
 
 IMAGE="$REGISTRY:$VERSION"
 echo "Using ChiselWare dev-full:$VERSION"
-=======
-IMAGE="ghcr.io/chiselware/dev-full:0.8.0"
->>>>>>> a973f19 (Formal verfication support)
 
 # ---------------------------------------------------------------------------
 # X forwarding — attach if a display is available, skip silently if not
