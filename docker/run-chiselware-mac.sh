@@ -25,7 +25,7 @@
 #   ./run-chiselware-mac.sh sbt "testOnly org.chiselware.MySpec"
 # =============================================================================
 
-REGISTRY="chiselwareregistry.azurecr.io/dev-full"
+REGISTRY="ghcr.io/chiselware/dev-full"
 # ---------------------------------------------------------------------------
 # -v <version> flag — required, must be valid semver x.y.z
 # Usage: ./run-chiselware.sh -v <x.y.z> [command...]
@@ -136,7 +136,13 @@ else
   fi
 fi
 
+# Create a name for the container based on where it started
+cw() {
+  basename "$PWD"
+}
+
 exec docker run -it --rm \
+  --name $(cw) \
   --platform linux/amd64 \
   -v "$(pwd):/workspace" \
   "${SSH_ARGS[@]}" \
