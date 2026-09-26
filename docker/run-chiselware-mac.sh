@@ -26,6 +26,7 @@
 # =============================================================================
 
 REGISTRY="ghcr.io/chiselware/dev-full"
+
 # ---------------------------------------------------------------------------
 # -v <version> flag — required, must be valid semver x.y.z
 # Usage: ./run-chiselware.sh -v <x.y.z> [command...]
