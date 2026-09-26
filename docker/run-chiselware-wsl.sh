@@ -159,7 +159,13 @@ else
   fi
 fi
 
+# Create a name for the container based on where it started
+cw() {
+  basename "$PWD"
+}
+
 exec docker run -it --rm \
+  --name $(cw) \
   -v "$(pwd):/workspace" \
   "${SSH_ARGS[@]}" \
   "${GIT_ARGS[@]}" \

@@ -1,0 +1,68 @@
+{
+  // ==========================================================================
+  // ChiselWare Dev Container Configuration
+  // DESTINATION: .devcontainer/devcontainer.json
+  //
+  // Provides the full ChiselWare development environment inside VS Code.
+  // Update "image" to match the current ChiselWare release version.
+  //
+  // Supported platforms:
+  //   - Linux (native X11)
+  //   - macOS (requires XQuartz — https://www.xquartz.org)
+  //   - Windows (requires WSLg on Windows 11, or VcXsrv on Windows 10)
+  // ==========================================================================
+
+  "name": "ChiselWare Dev Environment",
+
+  // Update this version to match the current ChiselWare release
+  "image": "ghcr.io/chiselware/dev-full:0.8.0",
+
+  // Project root is mounted as /workspace
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  // Run as root — required for SSH key setup and EDA tool access
+  "remoteUser": "root",
+
+  // --------------------------------------------------------------------------
+  // Mounts
+  // SSH keys mounted read-only to staging path — chowned in postStartCommand
+  // Git config mounted read-only for correct commit author
+  // --------------------------------------------------------------------------
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/tmp/.ssh-host,type=bind,readonly",
+    "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind,readonly"
+  ],
+
+  // --------------------------------------------------------------------------
+  // SSH key setup — runs after container starts
+  // Copies keys from staging path and sets correct ownership/permissions
+  // so SSH (and therefore GitHub access) works inside the container
+  // --------------------------------------------------------------------------
+  "postStartCommand": "cp -r /tmp/.ssh-host/. /root/.ssh/ && chown -R root:root /root/.ssh && chmod 700 /root/.ssh && find /root/.ssh -type f -exec chmod 600 {} \\; && find /root/.ssh -name '*.pub' -exec chmod 644 {} \\; && find /root/.ssh -name 'known_hosts' -exec chmod 644 {} \\;",
+
+  // --------------------------------------------------------------------------
+  // VS Code extensions installed automatically inside the container
+  // Kept minimal — personal preferences should be added in user settings
+  // --------------------------------------------------------------------------
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "scala-lang.scala",        // Scala syntax highlighting
+        "scalameta.metals",        // Scala language server (IntelliSense, errors)
+        "ms-vscode.makefile-tools" // Makefile support
+      ],
+      "settings": {
+        // Use the container's installed Java for Metals
+        "metals.javaHome": "/usr/lib/jvm/java-21-openjdk-amd64",
+        // Metals will use sbt from the container
+        "metals.sbtScript": "/usr/bin/sbt"
+      }
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // Port forwarding — add ports here if any tools serve a local web UI
+  // --------------------------------------------------------------------------
+  "forwardPorts": []
+}

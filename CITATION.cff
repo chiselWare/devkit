@@ -4,7 +4,8 @@ abstract: >
   chiselWare is a certified open-source ecosystem for professional-grade
   semiconductor IP core development using the Chisel hardware description
   language. It provides a methodology, toolchain, and certification
-  framework for creating reusable, high-quality Chisel IP cores.
+  framework for creating reusable, high-quality Chisel IP cores including
+  support for formal verification via SymbiYosys and Z3.
 authors:
   - family-names: Savage
     given-names: Warren
@@ -25,9 +26,10 @@ keywords:
   - formal verification
   - ASIC
   - FPGA
+  - certified IP
 preferred-citation:
   type: software
-  title: chiselWare
+  title: "chiselWare: A Certified Open-Source Ecosystem for Chisel-based Semiconductor IP"
   authors:
     - family-names: Savage
       given-names: Warren
