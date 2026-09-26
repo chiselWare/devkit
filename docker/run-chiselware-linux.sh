@@ -9,23 +9,21 @@
 #   - X forwarding for GTKWave (if a display is available)
 #
 # Usage:
-#   ./run-chiselware.sh                  # interactive shell (default version)
-#   ./run-chiselware.sh -v 0.7.1         # specific version
-#   ./run-chiselware.sh -v 0.7.1 sbt test  # specific version + command
-#   ./run-chiselware.sh sbt test         # run a single command and exit
+#   ./run-chiselware-linux.sh [-v <version>] [shell command] 
+#
+#   or set version by environment variable (takes precedent over -v)
+#
+#   CHISELWARE_DEV_VERSION=<version>
+#   ./run-chiselware-linux.sh [shell command] 
 #
 # Examples:
-#   cd ~/my-chisel-project && ~/run-chiselware.sh
-#   ./run-chiselware.sh sbt "testOnly mypackage.MySpec"
+#   ./run-chiselware-linux.sh -v 0.7.1 # Interactive mode
+#   ./run-chiselware-linux.sh -v 0.7.1 sbt test # Run command in container
+#    CHISELWARE_DEV_VERSION=0.7.1 && ./run-chiselware-linux.sh sbt test
 # =============================================================================
 
 REGISTRY="ghcr.io/chiselware/dev-full"
-# ---------------------------------------------------------------------------
-# -v <version> flag — required, must be valid semver x.y.z
-# Usage: ./run-chiselware.sh -v <x.y.z> [command...]
-# Example: ./run-chiselware.sh -v 0.7.1
-#          ./run-chiselware.sh -v 0.7.1 sbt test
-# ---------------------------------------------------------------------------
+
 VERSION=""
 while getopts ":v:" opt; do
   case $opt in
@@ -34,12 +32,12 @@ while getopts ":v:" opt; do
       ;;
     \?)
       echo "Error: unknown option -$OPTARG"
-      echo "Usage: $0 -v <x.y.z> [command...]"
+      echo "Usage: run-chiselware-linux.sh -v <x.y.z> [command...]"
       exit 1
       ;;
     :)
       echo "Error: -v requires a version argument"
-      echo "Usage: $0 -v <x.y.z> [command...]"
+      echo "Usage: run-chiselware-linux.sh -v <x.y.z> [command...]"
       exit 1
       ;;
   esac
@@ -47,10 +45,14 @@ done
 shift $((OPTIND - 1))  # remove parsed flags, leaving any command args
 
 if [ -z "$VERSION" ]; then
-  echo "Error: -v <version> is required."
-  echo "Usage: $0 -v <x.y.z> [command...]"
-  echo "Example: $0 -v 0.7.1"
-  exit 1
+  if [ -z "$CHISELWARE_DEV_VERSION" ]; then
+    echo "Error: No version argument or environmental variable found. Try either approach below:"
+    echo "  run-chiselware-linux.sh -v <x.y.z> [command...]"
+    echo "  CHISELWARE_DEV_VERSION=<x.y.z> && run_chiselware-linux.sh [command...]"
+    exit 1
+  else
+    VERSION=$CHISELWARE_DEV_VERSION
+  fi 
 fi
 
 SEMVER_REGEX="^[0-9]+\.[0-9]+\.[0-9]+$"
@@ -60,7 +62,7 @@ if [[ ! $VERSION =~ $SEMVER_REGEX ]]; then
 fi
 
 IMAGE="$REGISTRY:$VERSION"
-echo "Using ChiselWare dev-full:$VERSION"
+echo "Using chiselware/dev-full:$VERSION"
 
 # ---------------------------------------------------------------------------
 # X forwarding — attach if a display is available, skip silently if not

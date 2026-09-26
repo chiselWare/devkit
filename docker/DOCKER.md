@@ -153,7 +153,7 @@ start a tunnel — VS Code opens in your browser from any OS with no X
 forwarding required:
 
 ```bash
-run-chiselware-<platform>.sh
+run-chiselware-<platform>.sh -v <x.y.z>
 # Inside the container:
 code tunnel
 # Follow the GitHub auth prompt — opens VS Code in your browser
@@ -179,7 +179,12 @@ chmod +x run-chiselware-linux.sh
 
 # Daily use — run from your project directory
 cd ~/my-chisel-project
-run-chiselware-linux.sh
+run-chiselware-linux.sh -v <x.y.z>
+
+# Alternatively you can set the version with an environment variable
+export CHISELWARE_DEV_VERSION=<x.y.z>
+run-chiselware-linux.sh 
+
 ```
 
 ### macOS (Apple Silicon)
@@ -195,7 +200,11 @@ chmod +x run-chiselware-mac.sh
 
 # Daily use
 cd ~/my-chisel-project
-run-chiselware-mac.sh
+run-chiselware-mac.sh -v <x.y.z>
+
+# Alternatively you can set the version with an environment variable
+export CHISELWARE_DEV_VERSION=<x.y.z>
+run-chiselware-mac.sh 
 ```
 
 **X forwarding on Mac (GTKWave, Firefox):**
@@ -222,7 +231,11 @@ chmod +x run-chiselware-wsl.sh
 
 # Daily use — run from your project directory inside WSL2
 cd ~/my-chisel-project
-run-chiselware-wsl.sh
+run-chiselware-wsl.sh -v <x.y.z>
+
+# Alternatively you can set the version with an environment variable
+export CHISELWARE_DEV_VERSION=<x.y.z>
+run-chiselware-wsl.sh 
 ```
 
 **X forwarding on Windows:**
