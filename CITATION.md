@@ -10,7 +10,7 @@ If you use chiselWare in your research, please cite it as follows.
   title     = {{chiselWare}: A Certified Open-Source Ecosystem
                for {Chisel}-based Semiconductor {IP}},
   url       = {https://chiselware.org},
-  version   = {0.8.0},
+  version   = {0.9.0},
   year      = {2026},
   publisher = {Rocksavage Technology, Inc.}
 }
@@ -30,5 +30,5 @@ https://chiselware.org
 
 ## Plain Text
 
-W. Savage, chiselWare, version 0.8.0, Rocksavage Technology, Inc.,
+W. Savage, chiselWare, version 0.9.0, Rocksavage Technology, Inc.,
 2026. https://chiselware.org

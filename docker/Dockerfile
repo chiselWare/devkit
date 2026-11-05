@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Rocksavage Technology, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 # =============================================================================
 # ChiselWare Full Development Environment
 # Mirrors Azure VM cloud-init exactly — all versions pinned.
@@ -103,7 +106,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 RUN mkdir -p /opt/src \
     && cd /opt/src \
     && wget -O cudd-3.0.0.tar.gz \
-       https://sourceforge.net/projects/cudd-mirror/files/cudd-3.0.0.tar.gz/download \
+    https://sourceforge.net/projects/cudd-mirror/files/cudd-3.0.0.tar.gz/download \
     && tar xvf cudd-3.0.0.tar.gz \
     && cd cudd-3.0.0 \
     && autoreconf -i \
@@ -127,7 +130,7 @@ RUN git clone https://github.com/parallaxsw/OpenSTA.git /opt/OpenSTA-parallax \
     && git checkout aa3088885f1efa3150cdd8c962bebf0599b5ecf1 \
     # Fix tcl.h include path for Ubuntu layout
     && grep -rl "#include <tcl.h>" . \
-       | xargs -r sed -i "s|#include <tcl.h>|#include </usr/include/tcl/tcl.h>|g" \
+    | xargs -r sed -i "s|#include <tcl.h>|#include </usr/include/tcl/tcl.h>|g" \
     && cmake -S . -B build -DCUDD_DIR=/opt/cudd \
     && cd build \
     && make -j"$(nproc)" \
@@ -185,11 +188,11 @@ RUN apt-get update && apt-get install -y \
 # Uses official sbt apt repository, pinned to 1.11.7.
 # =============================================================================
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" \
-      > /etc/apt/sources.list.d/sbt.list \
+    > /etc/apt/sources.list.d/sbt.list \
     && echo "deb https://repo.scala-sbt.org/scalasbt/debian /" \
-      > /etc/apt/sources.list.d/sbt_old.list \
+    > /etc/apt/sources.list.d/sbt_old.list \
     && curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" \
-       > /etc/apt/trusted.gpg.d/sbt.asc \
+    > /etc/apt/trusted.gpg.d/sbt.asc \
     && apt-get update \
     && apt-get install -y sbt=1.11.7 \
     && apt-get clean \
@@ -200,7 +203,7 @@ RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" \
 # Pinned via versioned GitHub release URL.
 # =============================================================================
 RUN curl -fLo /tmp/firrtl-bin-linux-x64.tar.gz \
-      https://github.com/llvm/circt/releases/download/firtool-1.47.0/firrtl-bin-linux-x64.tar.gz \
+    https://github.com/llvm/circt/releases/download/firtool-1.47.0/firrtl-bin-linux-x64.tar.gz \
     && tar -xvf /tmp/firrtl-bin-linux-x64.tar.gz -C /tmp \
     && cp /tmp/firtool-1.47.0/bin/firtool /usr/local/bin/firtool \
     && chmod +x /usr/local/bin/firtool \
@@ -212,7 +215,7 @@ RUN curl -fLo /tmp/firrtl-bin-linux-x64.tar.gz \
 # VM had 1.10.1 installed; deliberately not upgrading to 1.12.4.
 # =============================================================================
 RUN curl -fLo /tmp/scala-cli.deb \
-      https://github.com/Virtuslab/scala-cli/releases/download/v1.10.1/scala-cli-x86_64-pc-linux.deb \
+    https://github.com/Virtuslab/scala-cli/releases/download/v1.10.1/scala-cli-x86_64-pc-linux.deb \
     && dpkg -i /tmp/scala-cli.deb \
     || apt-get install -f -y \
     && rm -f /tmp/scala-cli.deb
@@ -225,7 +228,7 @@ RUN curl -fLo /tmp/scala-cli.deb \
 RUN mkdir -p /opt/vscode-cli \
     && cd /opt/vscode-cli \
     && curl -L "https://update.code.visualstudio.com/latest/cli-linux-x64/stable" \
-       -o vscode-cli.tar.gz \
+    -o vscode-cli.tar.gz \
     && tar -xzf vscode-cli.tar.gz \
     && rm -f vscode-cli.tar.gz \
     && ln -sf /opt/vscode-cli/code /usr/local/bin/code
@@ -237,11 +240,11 @@ RUN mkdir -p /opt/vscode-cli \
 # =============================================================================
 RUN apt-get update && apt-get install -y wget gpg && \
     wget -qO- https://packages.mozilla.org/apt/repo-signing-key.gpg \
-        | gpg --dearmor > /usr/share/keyrings/mozilla-archive-keyring.gpg && \
+    | gpg --dearmor > /usr/share/keyrings/mozilla-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/mozilla-archive-keyring.gpg arch=amd64] https://packages.mozilla.org/apt mozilla main" \
-        > /etc/apt/sources.list.d/mozilla-firefox.list && \
+    > /etc/apt/sources.list.d/mozilla-firefox.list && \
     echo "Package: firefox\nPin: origin packages.mozilla.org\nPin-Priority: 1000" \
-        > /etc/apt/preferences.d/mozilla-firefox && \
+    > /etc/apt/preferences.d/mozilla-firefox && \
     apt-get update && apt-get install -y firefox && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
