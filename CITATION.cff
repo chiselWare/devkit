@@ -16,7 +16,7 @@ type: software
 license: Apache-2.0
 repository-code: https://github.com/chiselWare/devkit
 url: https://chiselware.org
-version: 0.9.5
+version: 0.10.0
 date-released: 2026-11-04
 keywords:
   - chisel
@@ -39,4 +39,4 @@ preferred-citation:
       affiliation: Rocksavage Technology, Inc.
   url: https://chiselware.org
   year: 2026
-  version: 0.9.5
+  version: 0.10.0
