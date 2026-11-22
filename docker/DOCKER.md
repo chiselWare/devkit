@@ -414,8 +414,8 @@ run-chiselware-<platform>.sh   # verify tools, run a regression
 
 ```bash
 echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-docker tag chiselware/dev-full:x.y.z ghcr.io/chiselware/dev-full:x.y.z
 docker push ghcr.io/chiselware/dev-full:x.y.z
+docker tag ghcr.io/chiselware/dev-full:x.y.z ghcr.io/chiselware/dev-full:latest
 ```
 
 After pushing, ensure the package is set to **Public** in GitHub:

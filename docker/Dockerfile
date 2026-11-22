@@ -249,6 +249,20 @@ RUN apt-get update && apt-get install -y wget gpg && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # =============================================================================
+# LAYER 13 — GitHub CLI
+# Used as part of various workflows
+# =============================================================================
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && mkdir -p -m 755 /etc/apt/keyrings \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    -o /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+    > /etc/apt/sources.list.d/github-cli.list \
+    && apt-get update && apt-get install -y --no-install-recommends gh \
+    && rm -rf /var/lib/apt/lists/*
+
+# =============================================================================
 # LAYER 12 — Environment, workspace, entrypoint
 # This layer is the cheapest to rebuild — put all ENV/config here.
 # Always keep this as the final layer.
